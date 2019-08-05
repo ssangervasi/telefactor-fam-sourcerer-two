@@ -4,9 +4,9 @@ Wattup, fam?! Welcome to `fam`, fam. Fam is:
 
 > The **only** CLI for building family trees.™
 >
-> Created by the child of Real-Life Parents™: `insert sourcer name here`
+> Created by the child of Real-Life Parents™: `gmkohler`
 >
-> Certified "Not Broken"™ by: `insert examiner name here`
+> Certified "Not Broken"™ by: `kcheung`
 
 
 
