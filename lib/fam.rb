@@ -67,20 +67,21 @@ module Fam
 
     # IMPLEMENT ME
     def get_parents(input_path:, child_name:)
-      people = read path: input_path
-      family = Family.new family: people
-
-      success family.get_parents(child_name: child_name, generations: 0).join("\n")
-    rescue Family::Errors::NoSuchPerson => e
-      failure e.message
+      get_parents_at_generation(input_path: input_path, child_name: child_name)
     end
 
     # IMPLEMENT ME
     def get_grandparents(input_path:, child_name:, greatness:)
+      get_parents_at_generation(input_path: input_path, child_name: child_name, generations: greatness + 1)
+    end
+
+    private
+
+    def get_parents_at_generation(input_path:, child_name:, generations: 0)
       people = read path: input_path
       family = Family.new family: people
 
-      success family.get_parents(child_name: child_name, generations: greatness + 1).join("\n")
+      success family.get_parents(child_name: child_name, generations: generations).join("\n")
     rescue Family::Errors::NoSuchPerson => e
       failure e.message
     end
