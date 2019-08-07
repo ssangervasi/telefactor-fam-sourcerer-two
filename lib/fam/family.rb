@@ -3,9 +3,29 @@
 module Fam
   class Family
     module Errors
-      class DuplicatePerson < StandardError; end
-      class NoSuchPerson < StandardError; end
-      class TooManyParents < StandardError; end
+      class DuplicatePerson < StandardError
+        MESSAGE = "Person '%s' already in family"
+
+        def initialize(person_name)
+          super(MESSAGE % person_name)
+        end
+      end
+
+      class NoSuchPerson < StandardError
+        MESSAGE = "No such person '%s' in family"
+
+        def initialize(person_name)
+          super(MESSAGE % person_name)
+        end
+      end
+
+      class TooManyParents < StandardError
+        MESSAGE = "Child '%s' can't have more than 2 parents!"
+
+        def initialize(child_name)
+          super(MESSAGE % child_name)
+        end
+      end
     end
 
     def initialize(family: {})
@@ -13,7 +33,7 @@ module Fam
     end
 
     def add_person(person_name:)
-      raise Errors::DuplicatePerson, "Person '#{person_name}' already in family" if family.key? person_name
+      raise Errors::DuplicatePerson, person_name if family.key? person_name
 
       family[person_name] = []
 
@@ -25,15 +45,21 @@ module Fam
         child_name,
         *parent_names,
       ].each do |name|
-        raise Errors::NoSuchPerson, "No such person '#{name}' in family" unless family.key? name
+        raise Errors::NoSuchPerson, name unless family.key? name
       end
 
       existing_parents = family.fetch child_name
-      raise Errors::TooManyParents, "Child '#{child_name}' can't have more than 2 parents!" if (existing_parents.length + parent_names.length) > 2
+      raise Errors::TooManyParents, child_name if (existing_parents.length + parent_names.length) > 2
 
       family[child_name] += parent_names
 
       family
+    end
+
+    def get_person(person_name:)
+      raise Errors::NoSuchPerson, person_name unless family.key? person_name
+
+      person_name
     end
 
     def to_h

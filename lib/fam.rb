@@ -56,11 +56,13 @@ module Fam
     end
 
     # IMPLEMENT ME
-    def get_person(
-      input_path:,
-      person_name:
-    )
-      failure
+    def get_person(input_path:, person_name:)
+      people = read path: input_path
+      family = Family.new family: people
+
+      success family.get_person person_name: person_name
+    rescue Family::Errors::NoSuchPerson => e
+      failure e.message
     end
 
     # IMPLEMENT ME
