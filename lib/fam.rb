@@ -30,32 +30,29 @@ module Fam
     def add_person(input_path:, output_path:, person_name:)
       people = read path: input_path
 
-      if people.key? person_name.to_sym
-        failure "Person '#{person_name}' already in family"
-      else
-        write path: output_path, json_hash: people.merge!(person_name.to_sym => [])
-        success "Added person: #{person_name}"
-      end
+      family = Family.new family: people
+
+      family.add_person person_name: person_name.to_s
+
+      write path: output_path, json_hash: family.to_h
+
+      success "Added person: #{person_name}"
+    rescue Family::Errors::DuplicatePerson => e
+      failure e.message
     end
 
     # IMPLEMENT ME
     def add_parents(input_path:, output_path:, child_name:, parent_names:)
       people = read path: input_path
+      family = Family.new family: people
 
-      [
-        child_name,
-        *parent_names,
-      ].each do |name|
-        return failure "No such person '#{name}' in family" unless people.key? name.to_sym
-      end
+      family.add_parents child_name: child_name, parent_names: parent_names
 
-      existing_parents = people.fetch child_name.to_sym
-      return failure "Child '#{child_name}' can't have more than 2 parents!" if (existing_parents.length + parent_names.length) > 2
-
-      people[child_name.to_sym] += parent_names
-      write path: output_path, json_hash: people
+      write path: output_path, json_hash: family.to_h
 
       success "Added #{parent_names.join(' & ')} as parents of #{child_name}"
+    rescue Family::Errors::NoSuchPerson, Family::Errors::TooManyParents => e
+      failure e.message
     end
 
     # IMPLEMENT ME
