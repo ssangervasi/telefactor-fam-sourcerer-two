@@ -39,13 +39,23 @@ module Fam
     end
 
     # IMPLEMENT ME
-    def add_parents(
-      input_path:,
-      output_path:,
-      child_name:,
-      parent_names:
-    )
-      failure
+    def add_parents(input_path:, output_path:, child_name:, parent_names:)
+      people = read path: input_path
+
+      [
+        child_name,
+        *parent_names,
+      ].each do |name|
+        return failure "No such person '#{name}' in family" unless people.key? name.to_sym
+      end
+
+      existing_parents = people.fetch child_name.to_sym
+      return failure "Child '#{child_name}' can't have more than 2 parents!" if (existing_parents.length + parent_names.length) > 2
+
+      people[child_name.to_sym] += parent_names
+      write path: output_path, json_hash: people
+
+      success "Added #{parent_names.join(' & ')} as parents of #{child_name}"
     end
 
     # IMPLEMENT ME
