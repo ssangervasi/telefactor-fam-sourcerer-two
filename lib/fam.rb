@@ -27,12 +27,15 @@ module Fam
   #   and in any files in the lib/fam/family directory.
   class << self
     # IMPLEMENT ME
-    def add_person(
-      input_path:,
-      output_path:,
-      person_name:
-    )
-      failure
+    def add_person(input_path:, output_path:, person_name:)
+      people = read path: input_path
+
+      if people.key? person_name.to_sym
+        failure "Person '#{person_name}' already in family"
+      else
+        write path: output_path, json_hash: people.merge!(person_name.to_sym => [])
+        success "Added person: #{person_name}"
+      end
     end
 
     # IMPLEMENT ME
