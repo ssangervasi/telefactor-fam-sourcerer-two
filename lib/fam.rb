@@ -66,11 +66,13 @@ module Fam
     end
 
     # IMPLEMENT ME
-    def get_parents(
-      input_path:,
-      child_name:
-    )
-      failure
+    def get_parents(input_path:, child_name:)
+      people = read path: input_path
+      family = Family.new family: people
+
+      success family.get_parents(child_name: child_name, generations: 0).join("\n")
+    rescue Family::Errors::NoSuchPerson => e
+      failure e.message
     end
 
     # IMPLEMENT ME

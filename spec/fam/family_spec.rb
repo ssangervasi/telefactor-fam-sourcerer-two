@@ -111,8 +111,8 @@ RSpec.describe Fam::Family do
     subject { family.get_parents(child_name: child_name, generations: generations) }
 
     describe 'no inputs' do
-      let(:child_name) { }
-      let(:generations) { }
+      let(:child_name) {}
+      let(:generations) {}
 
       it 'errors with NoSuchPerson' do
         expect { subject }.to raise_error(::Fam::Family::Errors::NoSuchPerson)
@@ -163,17 +163,17 @@ RSpec.describe Fam::Family do
       let(:generations) { 1 }
 
       before do
-        family.add_person(person_name: 'Hank\'s dad')
+        family.add_person(person_name: 'Cotton')
         family.add_person(person_name: 'Peggy\'s dad')
         family.add_person(person_name: 'Hank\'s mom')
         family.add_person(person_name: 'Peggy\'s mom')
-        family.add_parents(child_name: 'Hank', parent_names: ['Hank\'s dad', 'Hank\'s mom'])
+        family.add_parents(child_name: 'Hank', parent_names: ['Cotton', 'Hank\'s mom'])
         family.add_parents(child_name: 'Peggy', parent_names: ['Peggy\'s dad', 'Peggy\'s mom'])
         family.add_parents(child_name: 'Bobby', parent_names: ['Hank', 'Peggy'])
       end
 
       it 'gets 2nd generation of parents' do
-        expect(subject).to eq(["Hank's dad", "Hank's mom", "Peggy's dad", "Peggy's mom"])
+        expect(subject).to eq(['Cotton', "Hank's mom", "Peggy's dad", "Peggy's mom"])
       end
     end
   end

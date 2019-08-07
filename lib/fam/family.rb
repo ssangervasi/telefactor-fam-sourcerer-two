@@ -62,6 +62,15 @@ module Fam
       person_name
     end
 
+    def get_parents(child_name:, generations:)
+      child = get_person(person_name: child_name)
+      return child if generations.to_i.negative?
+
+      family.fetch(child_name).flat_map do |parent|
+        get_parents(child_name: parent, generations: generations - 1)
+      end
+    end
+
     def to_h
       family
     end
