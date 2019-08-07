@@ -3,28 +3,22 @@
 module Fam
   class Family
     module Errors
-      class DuplicatePerson < StandardError
+      class BaseError < StandardError
+        def initialize(*args)
+          super format(MESSAGE, *args)
+        end
+      end
+
+      class DuplicatePerson < BaseError
         MESSAGE = "Person '%s' already in family"
-
-        def initialize(person_name)
-          super(MESSAGE % person_name)
-        end
       end
 
-      class NoSuchPerson < StandardError
+      class NoSuchPerson < BaseError
         MESSAGE = "No such person '%s' in family"
-
-        def initialize(person_name)
-          super(MESSAGE % person_name)
-        end
       end
 
-      class TooManyParents < StandardError
+      class TooManyParents < BaseError
         MESSAGE = "Child '%s' can't have more than 2 parents!"
-
-        def initialize(child_name)
-          super(MESSAGE % child_name)
-        end
       end
     end
 
