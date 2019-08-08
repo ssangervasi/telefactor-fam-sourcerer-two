@@ -27,47 +27,63 @@ module Fam
   #   and in any files in the lib/fam/family directory.
   class << self
     # IMPLEMENT ME
-    def add_person(
-      input_path:,
-      output_path:,
-      person_name:
-    )
-      failure
+    def add_person(input_path:, output_path:, person_name:)
+      people = read path: input_path
+
+      family = Family.new family: people
+
+      family.add_person person_name: person_name.to_s
+
+      write path: output_path, json_hash: family.to_h
+
+      success "Added person: #{person_name}"
+    rescue Family::Errors::DuplicatePerson => e
+      failure e.message
     end
 
     # IMPLEMENT ME
-    def add_parents(
-      input_path:,
-      output_path:,
-      child_name:,
-      parent_names:
-    )
-      failure
+    def add_parents(input_path:, output_path:, child_name:, parent_names:)
+      people = read path: input_path
+      family = Family.new family: people
+
+      family.add_parents child_name: child_name, parent_names: parent_names
+
+      write path: output_path, json_hash: family.to_h
+
+      success "Added #{parent_names.join(' & ')} as parents of #{child_name}"
+    rescue Family::Errors::NoSuchPerson, Family::Errors::TooManyParents => e
+      failure e.message
     end
 
     # IMPLEMENT ME
-    def get_person(
-      input_path:,
-      person_name:
-    )
-      failure
+    def get_person(input_path:, person_name:)
+      people = read path: input_path
+      family = Family.new family: people
+
+      success family.get_person person_name: person_name
+    rescue Family::Errors::NoSuchPerson => e
+      failure e.message
     end
 
     # IMPLEMENT ME
-    def get_parents(
-      input_path:,
-      child_name:
-    )
-      failure
+    def get_parents(input_path:, child_name:)
+      get_parents_at_generation(input_path: input_path, child_name: child_name)
     end
 
     # IMPLEMENT ME
-    def get_grandparents(
-      input_path:,
-      child_name:,
-      greatness:
-    )
-      failure
+    def get_grandparents(input_path:, child_name:, greatness:)
+      get_parents_at_generation(input_path: input_path, child_name: child_name, generations: greatness + 1)
+    end
+
+    private
+
+    def get_parents_at_generation(input_path:, child_name:, generations: 0)
+      people = read path: input_path
+      family = Family.new family: people
+
+      success family.get_parents(child_name: child_name, generations: generations).join("\n")
+    rescue Family::Errors::NoSuchPerson => e
+      failure e.message
     end
   end
 end

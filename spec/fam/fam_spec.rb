@@ -18,7 +18,7 @@ RSpec.describe Fam do
 
       it 'adds Mr. Burns to family' do
         expect(subject.output).to eq "Added person: #{person_name}"
-        expect(results).to eq(initial_family_tree.merge({ :"#{person_name}" => [] }))
+        expect(results).to eq(initial_family_tree.merge("#{person_name}": []))
       end
     end
 
@@ -26,17 +26,24 @@ RSpec.describe Fam do
       let(:person_name) { Hatchery::Names.bart }
 
       it 'does not add existing person' do
-        expect(subject.error).to eq "Person '#{person_name} already in family"
+        expect(subject.error).to eq "Person '#{person_name}' already in family"
       end
     end
   end
 
   context '.add_parents' do
-    subject { Fam.add_parents(input_path: input_pathname, output_path: output_pathname, child_name: child_name, parent_names: parent_names) }
+    subject do
+      Fam.add_parents(
+        input_path: input_pathname,
+        output_path: output_pathname,
+        child_name: child_name,
+        parent_names: parent_names
+      )
+    end
 
     describe 'add parents for child who does not exist' do
       let(:child_name) { 'Mr. Burns' }
-      let(:parent_names) { [ Hatchery::Names.homer ] }
+      let(:parent_names) { [Hatchery::Names.homer] }
 
       it 'fails to find child' do
         expect(subject.error).to eq "No such person '#{child_name}' in family"
@@ -45,7 +52,7 @@ RSpec.describe Fam do
 
     describe 'add non-existent parent for child' do
       let(:child_name) { Hatchery::Names.homer }
-      let(:parent_names) { [ 'Not a real person' ] }
+      let(:parent_names) { ['Not a real person'] }
 
       it 'fails to find parent' do
         expect(subject.error).to eq "No such person '#{parent_names.first}' in family"
@@ -54,7 +61,7 @@ RSpec.describe Fam do
 
     describe 'adds parent to child with 2 parents' do
       let(:child_name) { 'Rod Flanders' }
-      let(:parent_names) { [ Hatchery::Names.homer ] }
+      let(:parent_names) { [Hatchery::Names.homer] }
 
       it 'fails to add 3rd parent' do
         expect(subject.error).to eq "Child '#{child_name}' can't have more than 2 parents!"
@@ -63,11 +70,11 @@ RSpec.describe Fam do
 
     describe 'adds parent to child with 1 parents' do
       let(:child_name) { Hatchery::Names.homer }
-      let(:parent_names) { [ 'Mona Simpson' ] }
+      let(:parent_names) { ['Mona Simpson'] }
 
       it 'adds 2nd parent' do
         expect(subject.output).to eq "Added Mona Simpson as parents of #{child_name}"
-        expect(results).to eq(initial_family_tree.merge({ :"Homer Simpson" => ["Grampa Simpson", "Mona Simpson"] }))
+        expect(results).to eq(initial_family_tree.merge("Homer Simpson": ['Grampa Simpson', 'Mona Simpson']))
       end
     end
 
@@ -77,17 +84,17 @@ RSpec.describe Fam do
 
       it 'adds both parents' do
         expect(subject.output).to eq "Added Homer Simpson & Marge Simpson as parents of #{child_name}"
-        expect(results).to eq(initial_family_tree.merge({ :"Bart Simpson" => parent_names }))
+        expect(results).to eq(initial_family_tree.merge("Bart Simpson": parent_names))
       end
     end
 
     describe 'add child as parent of self' do
       let(:child_name) { Hatchery::Names.bart }
-      let(:parent_names) { [ child_name, child_name ] }
+      let(:parent_names) { [child_name, child_name] }
 
       it 'adds self as parent' do
         expect(subject.output).to eq "Added #{child_name} & #{child_name} as parents of #{child_name}"
-        expect(results).to eq(initial_family_tree.merge({ :"Bart Simpson" => parent_names }))
+        expect(results).to eq(initial_family_tree.merge("Bart Simpson": parent_names))
       end
     end
   end
@@ -127,7 +134,7 @@ RSpec.describe Fam do
       let(:child_name) { Hatchery::Names.homer }
 
       it 'gets 1 parent' do
-        expect(subject.output).to eq "Grampa Simpson"
+        expect(subject.output).to eq 'Grampa Simpson'
       end
     end
 
@@ -135,7 +142,7 @@ RSpec.describe Fam do
       let(:child_name) { Hatchery::Names.jose }
 
       it 'gets no parents' do
-        expect(subject.output).to eq ""
+        expect(subject.output).to eq ''
       end
     end
 
@@ -165,7 +172,7 @@ RSpec.describe Fam do
       let(:greatness) { 0 }
 
       it 'gets 1 parent' do
-        expect(subject.output).to eq "Grampa Simpson"
+        expect(subject.output).to eq 'Grampa Simpson'
       end
     end
 
@@ -174,7 +181,7 @@ RSpec.describe Fam do
       let(:greatness) { 0 }
 
       it 'gets no parents' do
-        expect(subject.output).to eq ""
+        expect(subject.output).to eq ''
       end
     end
 
@@ -186,7 +193,6 @@ RSpec.describe Fam do
         expect(subject.error).to eq "No such person '#{child_name}' in family"
       end
     end
-
 
     describe 'get grandparents using greatness of -1' do
       let(:child_name) { Hatchery::Names.maggie }
